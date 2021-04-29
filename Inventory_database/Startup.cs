@@ -31,7 +31,7 @@ namespace Inventory_database
                 opts.UseSqlServer(Configuration.GetConnectionString("AppContext"))
             );
 
-            services.AddScoped<IRepository<StorageItem>, ItemsRepository>();
+            services.AddSingleton<IRepository<StorageItem>, ItemsRepository>();
             services.AddMvc();
         }
 
