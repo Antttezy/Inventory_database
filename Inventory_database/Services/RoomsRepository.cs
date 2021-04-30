@@ -58,7 +58,7 @@ namespace Inventory_database.Services
             {
                 var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
 
-                var del = await Context.Rooms.FirstAsync(i => i.Id == item.Id);
+                var del = await Context.Rooms.FirstAsync(r => r.Id == item.Id);
                 Context.Rooms.Remove(del);
                 await Context.SaveChangesAsync();
             }
