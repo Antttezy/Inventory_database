@@ -28,7 +28,11 @@ namespace Inventory_database
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<InventoryContext>(opts =>
-                opts.UseSqlServer(Configuration.GetConnectionString("AppContext"))
+                opts.UseSqlServer(Configuration.GetConnectionString("InvContext"))
+            );
+
+            services.AddDbContext<AuthenticationContext>(opts =>
+                opts.UseSqlServer(Configuration.GetConnectionString("AuthContext"))
             );
 
             services.AddSingleton<IRepository<StorageItem>, ItemsRepository>();

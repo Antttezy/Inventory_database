@@ -15,7 +15,7 @@ namespace Inventory_database.Data
 
         public InventoryContext(DbContextOptions options) : base(options)
         {
-            Database.EnsureCreated();
+
         }
     }
 }
