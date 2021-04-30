@@ -32,6 +32,8 @@ namespace Inventory_database
             );
 
             services.AddSingleton<IRepository<StorageItem>, ItemsRepository>();
+            services.AddSingleton<IRepository<ItemType>, TypesRepository>();
+            services.AddSingleton<IRepository<Room>, RoomsRepository>();
             services.AddMvc();
         }
 
