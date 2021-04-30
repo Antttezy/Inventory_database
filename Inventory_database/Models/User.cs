@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inventory_database.Models
 {
@@ -6,17 +7,21 @@ namespace Inventory_database.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public string Username { get; set; }
 
+        [Required]
         public string FirstName { get; set; }
 
+        [Required]
         public string SecondName { get; set; }
 
+        [Required]
         public string ThirdName { get; set; }
 
         public string PasswordHash { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public ICollection<Role> Roles { get; set; }
 
         public User()
         {

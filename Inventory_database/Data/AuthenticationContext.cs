@@ -9,7 +9,7 @@ namespace Inventory_database.Data
 
         public DbSet<Role> Roles { get; set; }
 
-        public AuthenticationContext(DbContextOptions options) : base(options)
+        public AuthenticationContext(DbContextOptions<AuthenticationContext> options) : base(options)
         {
 
         }

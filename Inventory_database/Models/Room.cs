@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Inventory_database.Models
 {
@@ -6,8 +7,10 @@ namespace Inventory_database.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Description { get; set; }
 
         public ICollection<StorageItem> Items { get; set; }
