@@ -1,6 +1,5 @@
 ﻿using Inventory_database.Models;
 using Inventory_database.Services;
-using System.Linq;
 
 namespace Inventory_database.Util
 {

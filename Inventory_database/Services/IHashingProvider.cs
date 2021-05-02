@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
-    interface IHashingProvider
+    public interface IHashingProvider
     {
         string Hash(string message);
     }
