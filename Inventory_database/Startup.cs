@@ -41,6 +41,7 @@ namespace Inventory_database
             services.AddSingleton<IRepository<User>, UsersRepository>();
             services.AddSingleton<IRepository<Role>, RolesRepository>();
             services.AddTransient<StringToByteArrayConverter>();
+            services.AddTransient<IHashingProvider, SHA1HashingProvider>();
 
             services.AddMvc();
         }

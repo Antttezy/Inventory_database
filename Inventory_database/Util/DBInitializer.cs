@@ -7,9 +7,9 @@ namespace Inventory_database.Util
     public static class DBInitializer
     {
 
-        public static void Seed(IRepository<User> users, IRepository<Role> roles, StringToByteArrayConverter converter)
+        public static void Seed(IRepository<User> users, IRepository<Role> roles, IHashingProvider provider)
         {
-            if (!users.GetAll().Result.Any() && !roles.GetAll().Result.Any())
+            if (!(users.Any().Result || roles.Any().Result))
             {
                 using (var hasher = System.Security.Cryptography.SHA1.Create())
                 {
@@ -19,7 +19,7 @@ namespace Inventory_database.Util
                         SecondName = "Администратор",
                         ThirdName = "Администратор",
                         Username = "Admin",
-                        PasswordHash = string.Join("", hasher.ComputeHash(converter.Convert("admin")).Select(b => b.ToString("X2")))
+                        PasswordHash = provider.Hash("admin")
                     };
 
                     Role administrator = new Role

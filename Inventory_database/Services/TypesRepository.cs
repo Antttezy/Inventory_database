@@ -29,6 +29,26 @@ namespace Inventory_database.Services
             }
         }
 
+        public async Task<bool> Any()
+        {
+            using (var scope = Provider.CreateScope())
+            {
+                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
+
+                return await Context.ItemTypes.AnyAsync();
+            }
+        }
+
+        public async Task<bool> Any(Func<ItemType, bool> predicate)
+        {
+            using (var scope = Provider.CreateScope())
+            {
+                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
+
+                return await Context.ItemTypes.AnyAsync(i => predicate(i));
+            }
+        }
+
         public async Task<ItemType> Get(int id)
         {
             using (var scope = Provider.CreateScope())
