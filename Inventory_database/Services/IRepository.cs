@@ -11,5 +11,7 @@ namespace Inventory_database.Services
         Task<T> Get(int id);
         Task Add(T item);
         Task Remove(T item);
+        Task<bool> Any();
+        Task<bool> Any(Func<T, bool> predicate);
     }
 }

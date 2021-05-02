@@ -40,6 +40,7 @@ namespace Inventory_database
             services.AddSingleton<IRepository<Room>, RoomsRepository>();
             services.AddSingleton<IRepository<User>, UsersRepository>();
             services.AddSingleton<IRepository<Role>, RolesRepository>();
+            services.AddTransient<StringToByteArrayConverter>();
 
             services.AddMvc();
         }

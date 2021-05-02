@@ -1,5 +1,9 @@
+using Inventory_database.Models;
+using Inventory_database.Services;
+using Inventory_database.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,7 +17,26 @@ namespace Inventory_database
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                try
+                {
+                    var users = scope.ServiceProvider.GetRequiredService<IRepository<User>>();
+                    var roles = scope.ServiceProvider.GetRequiredService<IRepository<Role>>();
+                    var converter = scope.ServiceProvider.GetRequiredService<StringToByteArrayConverter>();
+
+                    DBInitializer.Seed(users, roles, converter);
+                }
+                catch (Exception e)
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                    logger.LogError("Cannot seed a database");
+                }
+            }
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
