@@ -1,5 +1,6 @@
 ﻿using Inventory_database.Models;
 using Inventory_database.Services;
+using System.Linq;
 
 namespace Inventory_database.Util
 {
@@ -8,7 +9,7 @@ namespace Inventory_database.Util
 
         public static void Seed(IRepository<User> users, IRepository<Role> roles, IHashingProvider provider)
         {
-            if (!(users.Any().Result || roles.Any().Result))
+            if (!(users.GetAll().Any() || roles.GetAll().Any()))
             {
                 using (var hasher = System.Security.Cryptography.SHA1.Create())
                 {

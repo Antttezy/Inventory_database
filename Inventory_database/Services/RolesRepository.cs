@@ -9,79 +9,46 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
-    public class RolesRepository : IRepository<Role>
+    public class RolesRepository : IRepository<Role>, IDisposable
     {
+        AuthenticationContext Context { get; }
+        IServiceScope Scope { get; }
+
         public RolesRepository(IServiceProvider provider)
         {
-            Provider = provider;
+            Scope = provider.CreateScope();
+            Context = Scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
         }
-
-        public IServiceProvider Provider { get; }
 
         public async Task Add(Role item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
-
-                await Context.Roles.AddAsync(item);
-                await Context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<bool> Any()
-        {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
-
-                return await Context.Roles.AnyAsync();
-            }
-        }
-
-        public async Task<bool> Any(Func<Role, bool> predicate)
-        {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
-
-                return await Context.Roles.AnyAsync(i => predicate(i));
-            }
+            await Context.Roles.AddAsync(item);
+            await Context.SaveChangesAsync();
         }
 
         public async Task<Role> Get(int id)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
-
-                IQueryable<Role> roles = Context.Roles.Include(r => r.Users);
-                var item = await roles.AsNoTracking().FirstAsync(r => r.Id == id);
-                return item;
-            }
+            IQueryable<Role> roles = Context.Roles.Include(r => r.Users);
+            var item = await roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+            return item;
         }
 
-        public async Task<List<Role>> GetAll()
+        public IQueryable<Role> GetAll()
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
-
-                IQueryable<Role> roles = Context.Roles.Include(r => r.Users);
-                return await roles.AsNoTracking().ToListAsync();
-            }
+            IQueryable<Role> roles = Context.Roles.Include(r => r.Users);
+            return roles.AsNoTracking();
         }
 
         public async Task Remove(Role item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
+            var del = await Context.Roles.FirstAsync(r => r.Id == item.Id);
+            Context.Roles.Remove(del);
+            await Context.SaveChangesAsync();
+        }
 
-                var del = await Context.Roles.FirstAsync(r => r.Id == item.Id);
-                Context.Roles.Remove(del);
-                await Context.SaveChangesAsync();
-            }
+        public void Dispose()
+        {
+            Scope.Dispose();
         }
     }
 }

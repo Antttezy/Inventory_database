@@ -11,77 +11,44 @@ namespace Inventory_database.Services
 {
     public class RoomsRepository : IRepository<Room>
     {
+        InventoryContext Context { get; }
+        IServiceScope Scope { get; }
+
         public RoomsRepository(IServiceProvider provider)
         {
-            Provider = provider;
+            Scope = provider.CreateScope();
+            Context = Scope.ServiceProvider.GetRequiredService<InventoryContext>();
         }
-
-        public IServiceProvider Provider { get; }
 
         public async Task Add(Room item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                await Context.Rooms.AddAsync(item);
-                await Context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<bool> Any()
-        {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                return await Context.Rooms.AnyAsync();
-            }
-        }
-
-        public async Task<bool> Any(Func<Room, bool> predicate)
-        {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                return await Context.Rooms.AnyAsync(i => predicate(i));
-            }
+            await Context.Rooms.AddAsync(item);
+            await Context.SaveChangesAsync();
         }
 
         public async Task<Room> Get(int id)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                IQueryable<Room> rooms = Context.Rooms.Include(r => r.Items);
-                var item = await rooms.AsNoTracking().FirstAsync(i => i.Id == id);
-                return item;
-            }
+            IQueryable<Room> rooms = Context.Rooms.Include(r => r.Items);
+            var item = await rooms.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            return item;
         }
 
-        public async Task<List<Room>> GetAll()
+        public IQueryable<Room> GetAll()
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                IQueryable<Room> types = Context.Rooms.Include(r => r.Items);
-                return await types.AsNoTracking().ToListAsync();
-            }
+            IQueryable<Room> types = Context.Rooms.Include(r => r.Items);
+            return types.AsNoTracking();
         }
 
         public async Task Remove(Room item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
+            var del = await Context.Rooms.FirstAsync(r => r.Id == item.Id);
+            Context.Rooms.Remove(del);
+            await Context.SaveChangesAsync();
+        }
 
-                var del = await Context.Rooms.FirstAsync(r => r.Id == item.Id);
-                Context.Rooms.Remove(del);
-                await Context.SaveChangesAsync();
-            }
+        public void Dispose()
+        {
+            Scope.Dispose();
         }
     }
 }

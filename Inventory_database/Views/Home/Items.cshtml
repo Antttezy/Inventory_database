@@ -1,0 +1,14 @@
+﻿@using Inventory_database.ViewModels
+
+@model ItemsViewModel
+
+@{
+    ViewData["Title"] = "Инвентарь";
+}
+
+@foreach (var item in Model.Items)
+{
+    @await Html.PartialAsync("_ViewItem", item)
+}
+
+<a class="btn btn-primary" href="#">Создать</a>

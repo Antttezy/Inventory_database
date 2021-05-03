@@ -1,87 +1,54 @@
 ﻿using Inventory_database.Data;
 using Inventory_database.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Inventory_database.Services
 {
-    public class ItemsRepository : IRepository<StorageItem>
+    public class ItemsRepository : IRepository<StorageItem>, IDisposable
     {
-        IServiceProvider Provider { get; }
+        InventoryContext Context { get; }
+        IServiceScope Scope { get; }
 
         public ItemsRepository(IServiceProvider provider)
         {
-            Provider = provider;
+            Scope = provider.CreateScope();
+            Context = Scope.ServiceProvider.GetRequiredService<InventoryContext>();
         }
 
         public async Task Add(StorageItem item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                await Context.Items.AddAsync(item);
-                await Context.SaveChangesAsync();
-            }
+            await Context.Items.AddAsync(item);
+            await Context.SaveChangesAsync();
         }
 
         public async Task<StorageItem> Get(int id)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
-                var item = await items.AsNoTracking().FirstAsync(i => i.Id == id);
-                return item;
-            }
+            IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
+            var item = await items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            return item;
         }
 
-        public async Task<List<StorageItem>> GetAll()
+        public IQueryable<StorageItem> GetAll()
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
-                return await items.AsNoTracking().ToListAsync();
-            }
+            IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
+            return items.AsNoTracking();
         }
 
         public async Task Remove(StorageItem item)
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                var del = await Context.Items.FirstAsync(i => i.Id == item.Id);
-                Context.Items.Remove(del);
-                await Context.SaveChangesAsync();
-            }
+            var del = await Context.Items.FirstAsync(i => i.Id == item.Id);
+            Context.Items.Remove(del);
+            await Context.SaveChangesAsync();
         }
 
-        public async Task<bool> Any()
+        public void Dispose()
         {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                return await Context.Items.AnyAsync();
-            }
-        }
-
-        public async Task<bool> Any(Func<StorageItem, bool> predicate)
-        {
-            using (var scope = Provider.CreateScope())
-            {
-                var Context = scope.ServiceProvider.GetRequiredService<InventoryContext>();
-
-                return await Context.Items.AnyAsync(i => predicate(i));
-            }
+            Scope.Dispose();
         }
     }
 }

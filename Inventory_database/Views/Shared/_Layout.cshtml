@@ -7,27 +7,41 @@
     <title>@ViewData["Title"]</title>
 </head>
 <body>
-    <div class="navbar">
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Инвентарь</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Помещения</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Типы</a>
-            </li>
-        </ul>
-        <ul class="nav">
-            <li class="nav-item">
-                <username></username>
-            </li>
-        </ul>
+    <header>
+        <div class="navbar border-bottom mb-3">
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Инвентарь</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Помещения</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Типы</a>
+                </li>
+            </ul>
+            <ul class="nav">
+                <li class="nav-item">
+                    <username></username>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-    @RenderBody()
 
-    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.min.js" asp-append-version="true"></script>
+    <footer class="footer text-muted">
+        <nav role="navigation" class="navbar fixed-bottom border-top">
+            <div class="container">
+                Кумачев Антон - Система инвентарного учета
+            </div>
+        </nav>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>
