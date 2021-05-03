@@ -1,0 +1,31 @@
+﻿@using Inventory_database.ViewModels
+@model CreateItemViewModel
+
+@{
+    Layout = "_FormLayout";
+    ViewData["Title"] = "Добавить предмет инвентаря";
+}
+
+<form asp-action="CreateItem" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="InnerModel.Name" class="control-label">Наименование предмета</label>
+        <input asp-for="InnerModel.Name" name="Name" class="form-control" />
+        <span asp-validation-for="InnerModel.Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InnerModel.RoomId" class="control-label">Помещение</label>
+        <select asp-for="InnerModel.RoomId" Name="RoomId" asp-items="Model.Rooms">
+        </select>
+        <span asp-validation-for="InnerModel.RoomId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InnerModel.ItemTypeId" class="control-label">Помещение</label>
+        <select asp-for="InnerModel.ItemTypeId" Name="ItemTypeId" asp-items="Model.Types">
+        </select>
+        <span asp-validation-for="InnerModel.ItemTypeId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Создать" class="btn btn-primary" />
+    </div>
+</form>

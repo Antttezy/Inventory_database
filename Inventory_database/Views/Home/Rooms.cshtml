@@ -1,0 +1,20 @@
+﻿@using Inventory_database.ViewModels
+@model RoomsViewModel
+
+@{
+    ViewData["Title"] = "Помещения";
+}
+
+@if (Model.Rooms.Any())
+{
+    @foreach (var item in Model.Rooms)
+    {
+        @await Html.PartialAsync("_ViewRoom", item)
+    }
+}
+else
+{
+    <p class="text-muted text-center">Не найдено ни одного объекта в базе данных</p>
+}
+
+<a class="btn btn-primary w-25" asp-action="CreateRoom">Создать</a>

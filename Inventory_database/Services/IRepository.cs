@@ -11,5 +11,6 @@ namespace Inventory_database.Services
         Task<T> Get(int id);
         Task Add(T item);
         Task Remove(T item);
+        Task Update(T item);
     }
 }

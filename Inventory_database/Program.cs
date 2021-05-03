@@ -26,8 +26,9 @@ namespace Inventory_database
                     var users = scope.ServiceProvider.GetRequiredService<IRepository<User>>();
                     var roles = scope.ServiceProvider.GetRequiredService<IRepository<Role>>();
                     var hasher = scope.ServiceProvider.GetRequiredService<IHashingProvider>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-                    DBInitializer.Seed(users, roles, hasher);
+                    DBInitializer.Seed(users, roles, hasher, logger);
                 }
                 catch (Exception)
                 {

@@ -1,5 +1,6 @@
 ﻿using Inventory_database.Models;
 using Inventory_database.Services;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 
 namespace Inventory_database.Util
@@ -7,8 +8,10 @@ namespace Inventory_database.Util
     public static class DBInitializer
     {
 
-        public static void Seed(IRepository<User> users, IRepository<Role> roles, IHashingProvider provider)
+        public static void Seed(IRepository<User> users, IRepository<Role> roles, IHashingProvider provider, ILogger logger)
         {
+            logger.LogInformation("Database seeder started");
+
             if (!(users.GetAll().Any() || roles.GetAll().Any()))
             {
                 using (var hasher = System.Security.Cryptography.SHA1.Create())
@@ -39,6 +42,12 @@ namespace Inventory_database.Util
 
                     users.Add(Admin).Wait();
                 }
+
+                logger.LogInformation("Database seeded");
+            }
+            else
+            {
+                logger.LogInformation("Database is already seeded. Skipping this part");
             }
         }
     }

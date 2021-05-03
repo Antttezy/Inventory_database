@@ -1,10 +1,9 @@
-﻿@model Inventory_database.Models.StorageItem
+﻿@model Inventory_database.Models.ItemType
 
 <div class="card card-body ml-lg-3 mr-lg-3 mb-4">
     <h4 class="card-header">@Model.Name</h4>
     <ul>
-        <li class="text-black-50 text-left">Категория - @Model.Type.Name</li>
-        <li class="text-black-50 text-left">Помещение - @Model.Room.Name</li>
+        <li class="text-black-50 text-left">Описание - @Model.Description</li>
     </ul>
     <div class="navbar justify-content-end">
         <a class="btn btn-link w-auto m-1" href="#">Изменить</a>

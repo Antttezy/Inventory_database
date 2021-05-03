@@ -1,0 +1,24 @@
+﻿@using Inventory_database.Models
+@model ItemType
+
+@{
+    Layout = "_FormLayout";
+    ViewData["Title"] = "Создать категорию";
+}
+
+<form asp-action="CreateType" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Название категории</label>
+        <input asp-for="Name" name="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Описание</label>
+        <input asp-for="Description" name="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Создать" class="btn btn-primary"/>
+    </div>
+</form>

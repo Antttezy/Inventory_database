@@ -1,0 +1,20 @@
+﻿@using Inventory_database.ViewModels
+@model TypesViewModel
+
+@{
+    ViewData["Title"] = "Категории";
+}
+
+@if (Model.Types.Any())
+{
+    @foreach (var item in Model.Types)
+    {
+        @await Html.PartialAsync("_ViewType", item)
+    }
+}
+else
+{
+    <p class="text-muted text-center">Не найдено ни одного объекта в базе данных</p>
+}
+
+<a class="btn btn-primary w-25" asp-action="CreateType">Создать</a>

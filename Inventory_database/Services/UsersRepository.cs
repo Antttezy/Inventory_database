@@ -46,6 +46,12 @@ namespace Inventory_database.Services
             await Context.SaveChangesAsync();
         }
 
+        public async Task Update(User item)
+        {
+            Context.Update(item);
+            await Context.SaveChangesAsync();
+        }
+
         public void Dispose()
         {
             Scope.Dispose();
