@@ -29,7 +29,7 @@ namespace Inventory_database
 
                     DBInitializer.Seed(users, roles, hasher);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
                     logger.LogError("Cannot seed a database");
