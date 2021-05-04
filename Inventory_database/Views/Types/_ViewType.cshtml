@@ -6,7 +6,7 @@
         <li class="text-black-50 text-left">Описание - @Model.Description</li>
     </ul>
     <div class="navbar justify-content-end">
-        <a class="btn btn-link w-auto m-1" asp-action="EditType" asp-route-typeId="@Model.Id">Изменить</a>
-        <a class="btn btn-danger w-auto m-1" href="#">Удалить</a>
+        <a class="btn btn-link w-auto m-1" asp-action="Edit" asp-route-typeId="@Model.Id">Изменить</a>
+        <a class="btn btn-danger w-auto m-1" asp-action="Delete" asp-route-typeId="@Model.Id">Удалить</a>
     </div>
 </div>

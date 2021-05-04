@@ -3,7 +3,9 @@ using Inventory_database.Models;
 using Inventory_database.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,11 +66,21 @@ namespace Inventory_database
 
             app.UseRouting();
 
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.Map(
+                    "/",
+                    context =>
+                    {
+                        context.Response.Redirect("Home/Items/Index", true);
+                        return Task.CompletedTask;
+                    }
+                    );
+
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=index}/{id?}"
+                    name: "navigation",
+                    pattern: "Home/{controller}/{action}"
                     );
             });
         }

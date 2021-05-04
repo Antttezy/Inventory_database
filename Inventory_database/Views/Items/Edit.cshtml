@@ -3,11 +3,12 @@
 
 @{
     Layout = "_FormLayout";
-    ViewData["Title"] = "Добавить предмет инвентаря";
+    ViewData["Title"] = "Редактировать предмет инвентаря";
 }
 
-<form asp-action="CreateItem" asp-antiforgery="true">
+<form asp-action="Edit" asp-antiforgery="true">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="InnerModel.Id" name="Id" value="@Model.InnerModel.Id" />
     <div class="form-group">
         <label asp-for="InnerModel.Name" class="control-label">Наименование предмета</label>
         <input asp-for="InnerModel.Name" name="Name" class="form-control" />
@@ -26,6 +27,6 @@
         <span asp-validation-for="InnerModel.ItemTypeId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <input type="submit" value="Создать" class="btn btn-primary" />
+        <input type="submit" value="Применить" class="btn btn-primary" />
     </div>
 </form>

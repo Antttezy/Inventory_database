@@ -1,16 +1,16 @@
 ﻿@using Inventory_database.Models
-@model ItemType
+@model Room
 
 @{
     Layout = "_FormLayout";
-    ViewData["Title"] = "Редактировать категорию";
+    ViewData["Title"] = "Редактировать помещение";
 }
 
-<form asp-action="EditType" asp-antiforgery="true">
+<form asp-action="Edit" asp-antiforgery="true">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" name="Id" value="@Model.Id" />
     <div class="form-group">
-        <label asp-for="Name" class="control-label">Название категории</label>
+        <label asp-for="Name" class="control-label">Помещение (наименование или номер офиса)</label>
         <input asp-for="Name" name="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>

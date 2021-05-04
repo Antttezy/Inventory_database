@@ -7,7 +7,7 @@
         <li class="text-black-50 text-left">Помещение - @Model.Room.Name</li>
     </ul>
     <div class="navbar justify-content-end">
-        <a class="btn btn-link w-auto m-1" asp-action="EditItem" asp-route-itemId="@Model.Id">Изменить</a>
-        <a class="btn btn-danger w-auto m-1" asp-action="DeleteItem" asp-route-itemId="@Model.Id">Удалить</a>
+        <a class="btn btn-link w-auto m-1" asp-action="Edit" asp-route-itemId="@Model.Id">Изменить</a>
+        <a class="btn btn-danger w-auto m-1" asp-action="Delete" asp-route-itemId="@Model.Id">Удалить</a>
     </div>
 </div>
