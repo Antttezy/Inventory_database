@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
-    public class TypesRepository : IRepository<ItemType>
+    public class TypesRepository : IRepository<ItemType>, IDisposable
     {
         InventoryContext Context { get; }
         IServiceScope Scope { get; }
@@ -25,22 +25,22 @@ namespace Inventory_database.Services
             await Context.ItemTypes.AddAsync(item);
             await Context.SaveChangesAsync();
         }
+
         public async Task<ItemType> Get(int id)
         {
-            IQueryable<ItemType> types = Context.ItemTypes;
-            var item = await types.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            var item = await Context.ItemTypes.FindAsync(id);
             return item;
         }
 
         public IQueryable<ItemType> GetAll()
         {
             IQueryable<ItemType> types = Context.ItemTypes;
-            return types.AsNoTracking();
+            return types;
         }
 
         public async Task Remove(ItemType item)
         {
-            var del = await Context.ItemTypes.FirstAsync(i => i.Id == item.Id);
+            var del = await Context.ItemTypes.FindAsync(item.Id);
             Context.ItemTypes.Remove(del);
             await Context.SaveChangesAsync();
         }

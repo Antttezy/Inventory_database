@@ -1,0 +1,19 @@
+﻿@using Inventory_database.ViewModels
+@model DeleteViewModel
+
+@{
+    Layout = "_FormLayout";
+    ViewData["Title"] = "Вы уверены?";
+}
+
+<form class="p-2" action="@Model.ConfirmUrl" method="post" asp-antiforgery="true">
+    <div class="form-group">
+        <p class="text-center">
+            Вы уверены?
+        </p>
+    </div>
+    <div class="form-inline">
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+        <a href="@Model.FallbackUrl" class="nav-link">Отмена</a>
+    </div>
+</form>

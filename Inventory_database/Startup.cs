@@ -35,11 +35,11 @@ namespace Inventory_database
                 opts.UseSqlServer(Configuration.GetConnectionString("AuthContext"))
             );
 
-            services.AddSingleton<IRepository<StorageItem>, ItemsRepository>();
-            services.AddSingleton<IRepository<ItemType>, TypesRepository>();
-            services.AddSingleton<IRepository<Room>, RoomsRepository>();
-            services.AddSingleton<IRepository<User>, UsersRepository>();
-            services.AddSingleton<IRepository<Role>, RolesRepository>();
+            services.AddScoped<IRepository<StorageItem>, ItemsRepository>();
+            services.AddScoped<IRepository<ItemType>, TypesRepository>();
+            services.AddScoped<IRepository<Room>, RoomsRepository>();
+            services.AddScoped<IRepository<User>, UsersRepository>();
+            services.AddScoped<IRepository<Role>, RolesRepository>();
             services.AddTransient<StringToByteArrayConverter>();
             services.AddTransient<IHashingProvider, SHA1HashingProvider>();
 

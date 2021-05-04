@@ -3,6 +3,7 @@ using Inventory_database.Services;
 using Inventory_database.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -71,21 +72,9 @@ namespace Inventory_database.Controllers
         [Route("{controller}/Items/Create")]
         public IActionResult CreateItem()
         {
-            var typeQuery = _repositoryType
-                .GetAll()
-                .OrderBy(t => t.Name);
+            var vm = GetItemData(null);
 
-            var roomQuery = _repositoryRoom
-                .GetAll()
-                .OrderBy(r => r.Name);
-
-            var createItemVM = new CreateItemViewModel
-            {
-                Types = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(typeQuery, nameof(ItemType.Id), nameof(ItemType.Name)),
-                Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(roomQuery, nameof(Room.Id), nameof(Room.Name))
-            };
-
-            return View(createItemVM);
+            return View(vm);
         }
 
         [HttpPost]
@@ -100,22 +89,9 @@ namespace Inventory_database.Controllers
             }
             else
             {
-                var typeQuery = _repositoryType
-                .GetAll()
-                .OrderBy(t => t.Name);
+                var vm = GetItemData(item);
 
-                var roomQuery = _repositoryRoom
-                    .GetAll()
-                    .OrderBy(r => r.Name);
-
-                var createItemVM = new CreateItemViewModel
-                {
-                    Types = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(typeQuery, nameof(ItemType.Id), nameof(ItemType.Name)),
-                    Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(roomQuery, nameof(Room.Id), nameof(Room.Name)),
-                    InnerModel = item
-                };
-
-                return View(createItemVM);
+                return View(vm);
             }
         }
 
@@ -163,9 +139,228 @@ namespace Inventory_database.Controllers
             }
         }
 
-        public IActionResult Index()
+        [Route("{controller}/Items/Edit")]
+        public async Task<IActionResult> EditItem(int itemId)
         {
-            return RedirectToActionPermanent(nameof(Items));
+            var item = await _repositoryItem.Get(itemId);
+
+            if (item != null)
+            {
+                var vm = GetItemData(item);
+
+                return View(vm);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("{controller}/Items/Edit")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditItem(StorageItem item)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _repositoryItem.Update(item);
+                    return RedirectToAction(nameof(Items));
+                }
+                else
+                {
+                    return View(GetItemData(item));
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [Route("{controller}/Types/Edit")]
+        public async Task<IActionResult> EditType(int typeId)
+        {
+            var type = await _repositoryType.Get(typeId);
+
+            if (type != null)
+            {
+                return View(type);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("{controller}/Types/Edit")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditType(ItemType type)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _repositoryType.Update(type);
+                    return RedirectToAction(nameof(Types));
+                }
+                else
+                {
+                    return View(type);
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [Route("{controller}/Rooms/Edit")]
+        public async Task<IActionResult> EditRoom(int roomId)
+        {
+            var room = await _repositoryRoom.Get(roomId);
+
+            if (room != null)
+            {
+                return View(room);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("{controller}/Rooms/Edit")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRoom(Room room)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _repositoryRoom.Update(room);
+                    return RedirectToAction(nameof(Rooms));
+                }
+                else
+                {
+                    return View(room);
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [Route("{controller}/Items/Delete")]
+        public IActionResult DeleteItem(int itemId)
+        {
+            var deleteVM = new DeleteViewModel
+            {
+                ConfirmUrl = Url.Action(nameof(DeleteItemConfirm), new { itemId = itemId}),
+                FallbackUrl = Url.Action(nameof(Items))
+            };
+
+            return View("_ConfirmDelete", deleteVM);
+        }
+
+        [Route("{controller}/Items/Delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteItemConfirm(int itemId)
+        {
+            var item = await _repositoryItem.Get(itemId);
+
+            if (item != null)
+            {
+                await _repositoryItem.Remove(item);
+                return RedirectToAction(nameof(Items));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("{controller}/Types/Delete")]
+        public IActionResult DeleteType(int typeId)
+        {
+            var deleteVM = new DeleteViewModel
+            {
+                ConfirmUrl = Url.Action(nameof(DeleteTypeConfirm), new { typeId = typeId }),
+                FallbackUrl = Url.Action(nameof(Types))
+            };
+
+            return View("_ConfirmDelete", deleteVM);
+        }
+
+        [Route("{controller}/Types/Delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTypeConfirm(int typeId)
+        {
+            var type = await _repositoryType.Get(typeId);
+
+            if (type != null)
+            {
+                await _repositoryType.Remove(type);
+                return RedirectToAction(nameof(Types));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("{controller}/Rooms/Delete")]
+        public IActionResult DeleteRoom(int roomId)
+        {
+            var deleteVM = new DeleteViewModel
+            {
+                ConfirmUrl = Url.Action(nameof(DeleteRoomConfirm), new { roomId = roomId }),
+                FallbackUrl = Url.Action(nameof(Rooms))
+            };
+
+            return View("_ConfirmDelete", deleteVM);
+        }
+
+        [Route("{controller}/Rooms/Delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRoomConfirm(int roomId)
+        {
+            var room = await _repositoryRoom.Get(roomId);
+
+            if (room != null)
+            {
+                await _repositoryRoom.Remove(room);
+                return RedirectToAction(nameof(Rooms));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        private CreateItemViewModel GetItemData(StorageItem item)
+        {
+            var typeQuery = _repositoryType
+                .GetAll()
+                .OrderBy(t => t.Name);
+
+            var roomQuery = _repositoryRoom
+                .GetAll()
+                .OrderBy(r => r.Name);
+
+            return new CreateItemViewModel
+            {
+                Types = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(typeQuery, nameof(ItemType.Id), nameof(ItemType.Name)),
+                Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(roomQuery, nameof(Room.Id), nameof(Room.Name)),
+                InnerModel = item
+            };
         }
     }
 }

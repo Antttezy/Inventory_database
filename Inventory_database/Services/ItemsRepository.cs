@@ -28,20 +28,19 @@ namespace Inventory_database.Services
 
         public async Task<StorageItem> Get(int id)
         {
-            IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
-            var item = await items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            var item = await Context.Items.FindAsync(id);
             return item;
         }
 
         public IQueryable<StorageItem> GetAll()
         {
             IQueryable<StorageItem> items = Context.Items.Include(item => item.Type).Include(item => item.Room);
-            return items.AsNoTracking();
+            return items;
         }
 
         public async Task Remove(StorageItem item)
         {
-            var del = await Context.Items.FirstAsync(i => i.Id == item.Id);
+            var del = await Context.Items.FindAsync(item.Id);
             Context.Items.Remove(del);
             await Context.SaveChangesAsync();
         }
