@@ -12,10 +12,12 @@ namespace Inventory_database.Controllers
     public class TypesController : Controller
     {
         IRepository<ItemType> _repositoryType;
+        IAuthenticationProvider AuthenticationProvider { get; }
 
-        public TypesController(IRepository<ItemType> repositoryType)
+        public TypesController(IRepository<ItemType> repositoryType, IAuthenticationProvider authenticationProvider)
         {
             _repositoryType = repositoryType;
+            AuthenticationProvider = authenticationProvider;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -32,8 +34,11 @@ namespace Inventory_database.Controllers
             return View(typesView);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             return View();
         }
 
@@ -41,6 +46,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemType type)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             if (ModelState.IsValid)
             {
                 await _repositoryType.Add(type);
@@ -55,6 +63,9 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Edit(int typeId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var type = await _repositoryType.Get(typeId);
 
             if (type != null)
@@ -72,6 +83,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ItemType type)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             try
             {
                 if (ModelState.IsValid)
@@ -90,8 +104,11 @@ namespace Inventory_database.Controllers
             }
         }
 
-        public IActionResult Delete(int typeId)
+        public async Task<IActionResult> Delete(int typeId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var deleteVM = new DeleteViewModel
             {
                 ConfirmUrl = Url.Action(nameof(DeleteConfirm), new { typeId = typeId }),
@@ -105,6 +122,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirm(int typeId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var type = await _repositoryType.Get(typeId);
 
             if (type != null)
@@ -116,6 +136,14 @@ namespace Inventory_database.Controllers
             {
                 return NotFound();
             }
+        }
+
+        protected async Task<User> Authorize()
+        {
+            string token = HttpContext.Request.Cookies["auth_token"];
+            User user = await AuthenticationProvider.GetUserByTokenAsync(token);
+
+            return user;
         }
     }
 }

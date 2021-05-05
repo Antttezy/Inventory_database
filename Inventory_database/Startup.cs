@@ -82,8 +82,8 @@ namespace Inventory_database
                     );
 
                 endpoints.MapControllerRoute(
-                    name: "navigation",
-                    pattern: "Home/{controller}/{action}"
+                    name: "inv",
+                    pattern: "Home/{controller}/{action=Index}"
                     );
             });
         }

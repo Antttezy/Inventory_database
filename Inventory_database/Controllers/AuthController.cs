@@ -3,8 +3,6 @@ using Inventory_database.Services;
 using Inventory_database.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inventory_database.Controllers
@@ -21,9 +19,12 @@ namespace Inventory_database.Controllers
         }
 
         [Route("Auth/Login")]
-        public IActionResult Login()
+        public IActionResult Login(string fallbackUrl = "/Home/Items")
         {
-            return View(new AuthViewModel());
+            if (!Url.IsLocalUrl(fallbackUrl))
+                fallbackUrl = "Home/Items";
+
+            return View(new AuthViewModel { Fallback = fallbackUrl });
         }
 
         [Route("Auth/Login")]
@@ -43,7 +44,10 @@ namespace Inventory_database.Controllers
                 else
                 {
                     HttpContext.Response.Cookies.Append("auth_token", token);
-                    return RedirectToAction(nameof(ItemsController.Index), "Items");
+                    if (!Url.IsLocalUrl(model.Fallback))
+                        model.Fallback = "Home/Items";
+
+                    return Redirect(model.Fallback);
                 }
             }
             else

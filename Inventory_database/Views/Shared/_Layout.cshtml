@@ -15,14 +15,20 @@
     <header>
         <div class="navbar border-bottom mb-3">
             <ul class="nav">
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Items">Инвентарь</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Rooms">Помещения</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Types">Категории</a>
+                <li>
+                    <require-roles roles="new List<string>{userRole, adminRole}">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Items">Инвентарь</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Rooms">Помещения</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Types">Категории</a>
+                            </li>
+                            </ul>
+                    </require-roles>
                 </li>
             </ul>
             <ul class="nav">
@@ -31,7 +37,7 @@
                         <ul class="nav">
                             <li class="nav-item"><username /></li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">Настройки</a>
+                                <a asp-controller="settings" class="nav-link">Настройки</a>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="auth" asp-action="logout" method="post" class="form-inline">

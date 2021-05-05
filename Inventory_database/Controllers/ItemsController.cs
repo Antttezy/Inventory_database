@@ -15,11 +15,14 @@ namespace Inventory_database.Controllers
         IRepository<Room> _repositoryRoom;
         IRepository<ItemType> _repositoryType;
 
-        public ItemsController(IRepository<StorageItem> repositoryItem, IRepository<Room> repositoryRoom, IRepository<ItemType> repositoryType)
+        IAuthenticationProvider AuthenticationProvider { get; }
+
+        public ItemsController(IRepository<StorageItem> repositoryItem, IRepository<Room> repositoryRoom, IRepository<ItemType> repositoryType, IAuthenticationProvider authenticationProvider)
         {
             _repositoryItem = repositoryItem;
             _repositoryRoom = repositoryRoom;
             _repositoryType = repositoryType;
+            AuthenticationProvider = authenticationProvider;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -36,10 +39,12 @@ namespace Inventory_database.Controllers
             return View(itemsView);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var vm = GetItemData(null);
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
 
+            var vm = GetItemData(null);
             return View(vm);
         }
 
@@ -47,6 +52,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StorageItem item)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             if (ModelState.IsValid)
             {
                 await _repositoryItem.Add(item);
@@ -62,6 +70,9 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Edit(int itemId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var item = await _repositoryItem.Get(itemId);
 
             if (item != null)
@@ -80,6 +91,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StorageItem item)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             try
             {
                 if (ModelState.IsValid)
@@ -98,8 +112,11 @@ namespace Inventory_database.Controllers
             }
         }
 
-        public IActionResult Delete(int itemId)
+        public async Task<IActionResult> Delete(int itemId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var deleteVM = new DeleteViewModel
             {
                 ConfirmUrl = Url.Action(nameof(DeleteConfirm), new { itemId = itemId }),
@@ -113,6 +130,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirm(int itemId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var item = await _repositoryItem.Get(itemId);
 
             if (item != null)
@@ -142,6 +162,14 @@ namespace Inventory_database.Controllers
                 Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(roomQuery, nameof(Room.Id), nameof(Room.Name)),
                 InnerModel = item
             };
+        }
+
+        protected async Task<User> Authorize()
+        {
+            string token = HttpContext.Request.Cookies["auth_token"];
+            User user = await AuthenticationProvider.GetUserByTokenAsync(token);
+
+            return user;
         }
     }
 }

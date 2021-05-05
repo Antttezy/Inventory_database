@@ -4,7 +4,6 @@ using Inventory_database.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,10 +12,12 @@ namespace Inventory_database.Controllers
     public class RoomsController : Controller
     {
         IRepository<Room> _repositoryRoom;
+        IAuthenticationProvider AuthenticationProvider { get; }
 
-        public RoomsController(IRepository<Room> repositoryRoom)
+        public RoomsController(IRepository<Room> repositoryRoom, IAuthenticationProvider authenticationProvider)
         {
             _repositoryRoom = repositoryRoom;
+            AuthenticationProvider = authenticationProvider;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -33,8 +34,11 @@ namespace Inventory_database.Controllers
             return View(roomsView);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             return View();
         }
 
@@ -42,6 +46,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Room room)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             if (ModelState.IsValid)
             {
                 await _repositoryRoom.Add(room);
@@ -55,6 +62,9 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Edit(int roomId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var room = await _repositoryRoom.Get(roomId);
 
             if (room != null)
@@ -71,6 +81,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Room room)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             try
             {
                 if (ModelState.IsValid)
@@ -89,8 +102,11 @@ namespace Inventory_database.Controllers
             }
         }
 
-        public IActionResult Delete(int roomId)
+        public async Task<IActionResult> Delete(int roomId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var deleteVM = new DeleteViewModel
             {
                 ConfirmUrl = Url.Action(nameof(DeleteConfirm), new { roomId = roomId }),
@@ -104,6 +120,9 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirm(int roomId)
         {
+            if (await Authorize() == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
             var room = await _repositoryRoom.Get(roomId);
 
             if (room != null)
@@ -115,6 +134,14 @@ namespace Inventory_database.Controllers
             {
                 return NotFound();
             }
+        }
+
+        protected async Task<User> Authorize()
+        {
+            string token = HttpContext.Request.Cookies["auth_token"];
+            User user = await AuthenticationProvider.GetUserByTokenAsync(token);
+
+            return user;
         }
     }
 }

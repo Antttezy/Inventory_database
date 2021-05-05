@@ -1,0 +1,48 @@
+﻿@{
+    string userRole = "Пользователь";
+    string adminRole = "Администратор";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <title>@ViewData["Title"]</title>
+</head>
+<body class="container-fluid flex-row">
+    <header>
+        <div class="sidenav">
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+        </div>
+    </header>
+    <div class="main">
+        <main role="main" class="pb-3 row">
+            <require-roles roles="new List<string> { userRole, adminRole}">
+                @RenderBody()
+            </require-roles>
+            <anonymous>
+                <p class="text-muted text-center"><a asp-controller="Auth" asp-action="Login" class="btn-link">Войдите</a>, чтобы пользоваться приложением</p>
+                @{
+                    IgnoreBody();
+                }
+            </anonymous>
+        </main>
+        <footer class="footer text-muted row">
+            <nav role="navigation" class="navbar fixed-bottom border-top">
+                <div class="justify-content-around container">
+                    Кумачев Антон - Система инвентарного учета
+                </div>
+            </nav>
+        </footer>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
