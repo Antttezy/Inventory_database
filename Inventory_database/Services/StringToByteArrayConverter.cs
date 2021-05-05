@@ -10,7 +10,7 @@ namespace Inventory_database.Services
     {
         public byte[] Convert(string message)
         {
-            return Encoding.UTF8.GetBytes(message);
+            return Encoding.UTF8.GetBytes(message ?? "");
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using Inventory_database.Data;
 using Inventory_database.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,12 +9,10 @@ namespace Inventory_database.Services
     public class UsersRepository : IRepository<User>
     {
         AuthenticationContext Context { get; }
-        IServiceScope Scope { get; }
 
-        public UsersRepository(IServiceProvider provider)
+        public UsersRepository(AuthenticationContext context)
         {
-            Scope = provider.CreateScope();
-            Context = Scope.ServiceProvider.GetRequiredService<AuthenticationContext>();
+            Context = context;
         }
 
         public async Task Add(User item)
@@ -50,11 +45,6 @@ namespace Inventory_database.Services
         {
             Context.Update(item);
             await Context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            Scope.Dispose();
         }
     }
 }

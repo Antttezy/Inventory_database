@@ -1,23 +1,25 @@
 ﻿using Inventory_database.Models;
 using Inventory_database.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Text.Encodings.Web;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inventory_database.TagHelpers
 {
-    // You may need to install the Microsoft.AspNetCore.Razor.Runtime package into your project
-    [HtmlTargetElement("username")]
-    public class UsernameTagHelper : TagHelper
+    [HtmlTargetElement("require-roles")]
+    public class RequireRolesTagHelper : TagHelper
     {
-        [HtmlAttributeNotBound, ViewContext]
+        [HtmlAttributeNotBound]
+        [ViewContext]
         public ViewContext ViewContext { get; set; }
-        public IAuthenticationProvider AuthenticationProvider { get; }
 
-        public UsernameTagHelper(IAuthenticationProvider authenticationProvider)
+        public IAuthenticationProvider AuthenticationProvider { get; }
+        public List<string> Roles { get; set; }
+
+        public RequireRolesTagHelper(IAuthenticationProvider authenticationProvider)
         {
             AuthenticationProvider = authenticationProvider;
         }
@@ -27,17 +29,19 @@ namespace Inventory_database.TagHelpers
             string token = ViewContext.HttpContext.Request.Cookies["auth_token"];
             User user = await AuthenticationProvider.GetUserByTokenAsync(token);
 
-            output.TagMode = TagMode.StartTagAndEndTag;
-            output.TagName = "p";
-            output.AddClass("nav-link", HtmlEncoder.Default);
-
-            if (user != null)
+            if (user == null)
             {
-                output.Content.AppendHtml(user.FirstName + " " + user.SecondName);
+                output.SuppressOutput();
+                return;
+            }
+
+            if (user.Roles.Any(role => Roles.Contains(role.Name)))
+            {
+                output.TagName = "div";
             }
             else
             {
-                output.Content.AppendHtml("Аноним");
+                output.SuppressOutput();
             }
         }
     }

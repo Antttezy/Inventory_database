@@ -1,23 +1,17 @@
 ﻿using Inventory_database.Data;
 using Inventory_database.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
-    public class TypesRepository : IRepository<ItemType>, IDisposable
+    public class TypesRepository : IRepository<ItemType>
     {
         InventoryContext Context { get; }
-        IServiceScope Scope { get; }
 
-        public TypesRepository(IServiceProvider provider)
+        public TypesRepository(InventoryContext context)
         {
-            Scope = provider.CreateScope();
-            Context = Scope.ServiceProvider.GetRequiredService<InventoryContext>();
+            Context = context;
         }
 
         public async Task Add(ItemType item)
@@ -49,11 +43,6 @@ namespace Inventory_database.Services
         {
             Context.Update(item);
             await Context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            Scope.Dispose();
         }
     }
 }

@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string userRole = "Пользователь";
+    string adminRole = "Администратор";
+}
+
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -22,14 +27,41 @@
             </ul>
             <ul class="nav">
                 <li class="nav-item">
-                    <username></username>
+                    <require-roles roles="new List<string>{ userRole, adminRole}">
+                        <ul class="nav">
+                            <li class="nav-item"><username /></li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">Настройки</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="auth" asp-action="logout" method="post" class="form-inline">
+                                    <button class="btn btn-link d-inline">Выход</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </require-roles>
+                    <anonymous>
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a asp-controller="Auth" asp-action="Login" class="nav-link">Войти</a>
+                            </li>
+                        </ul>
+                    </anonymous>
                 </li>
             </ul>
         </div>
     </header>
     <div class="container align-items-center text-center">
         <main role="main" class="pb-3">
-            @RenderBody()
+            <require-roles roles="new List<string> { userRole, adminRole}">
+                @RenderBody()
+            </require-roles>
+            <anonymous>
+                <p class="text-muted text-center"><a asp-controller="Auth" asp-action="Login" class="btn-link">Войдите</a>, чтобы пользоваться приложением</p>
+                @{
+                    IgnoreBody();
+                }
+            </anonymous>
         </main>
     </div>
     <footer class="footer text-muted">
