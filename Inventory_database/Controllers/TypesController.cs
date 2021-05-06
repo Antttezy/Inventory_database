@@ -25,17 +25,18 @@ namespace Inventory_database.Controllers
         {
             TypesViewModel typesView = new TypesViewModel
             {
-                Types = new List<ItemType>(),
-                Page = page
+                Types = new List<ItemType>()
             };
 
             var user = await Authorize();
+
             if (user != null && user.Roles.Any(r => r.Name == "Пользователь"))
             {
                 var types = _repositoryType.GetAll();
                 var list = await types.OrderByDescending(t => t.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
 
                 typesView.Types = list;
+                typesView.Page = new PagingViewModel(page, await types.CountAsync(), 10);
             }
 
             return View(typesView);

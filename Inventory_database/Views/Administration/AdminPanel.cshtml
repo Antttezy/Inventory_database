@@ -17,3 +17,14 @@
         @await Html.PartialAsync("_ViewUser", user)
     }
 </div>
+<p>
+    @if (Model.Page.CurrentPage > 1)
+    {
+        <a asp-action="Index" asp-route-page="@(Model.Page.CurrentPage - 1)" class="btn btn-info">⮜</a>
+    }
+    @Model.Page.CurrentPage из @Model.Page.TotalPages
+    @if (Model.Page.CurrentPage < Model.Page.TotalPages)
+    {
+        <a asp-action="Index" asp-route-page="@(Model.Page.CurrentPage + 1)" class="btn btn-info">⮞</a>
+    }
+</p>

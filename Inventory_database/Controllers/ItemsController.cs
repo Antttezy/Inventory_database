@@ -30,8 +30,7 @@ namespace Inventory_database.Controllers
         {
             ItemsViewModel itemsView = new ItemsViewModel
             {
-                Items = new List<StorageItem>(),
-                Page = page
+                Items = new List<StorageItem>()
             };
 
             var user = await Authorize();
@@ -42,6 +41,7 @@ namespace Inventory_database.Controllers
                 var list = await items.OrderByDescending(i => i.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
 
                 itemsView.Items = list;
+                itemsView.Page = new PagingViewModel(page, await items.CountAsync(), 10);
             }
 
             return View(itemsView);

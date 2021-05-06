@@ -41,7 +41,7 @@ namespace Inventory_database.Controllers
             var vm = new AdministrationViewModel
             {
                 Users = users,
-                Page = page
+                Page = new PagingViewModel(page, await UserRepository.GetAll().CountAsync(), 5)
             };
 
             return View(vm);

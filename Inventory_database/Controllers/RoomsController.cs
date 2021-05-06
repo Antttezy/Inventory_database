@@ -25,17 +25,18 @@ namespace Inventory_database.Controllers
         {
             RoomsViewModel roomsView = new RoomsViewModel
             {
-                Rooms = new List<Room>(),
-                Page = page
+                Rooms = new List<Room>()
             };
 
             var user = await Authorize();
+
             if (user != null && user.Roles.Any(r => r.Name == "Пользователь"))
             {
                 var rooms = _repositoryRoom.GetAll();
                 var list = await rooms.OrderByDescending(r => r.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
 
                 roomsView.Rooms = list;
+                roomsView.Page = new PagingViewModel(page, await rooms.CountAsync(), 10);
             }
 
             return View(roomsView);

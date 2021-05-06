@@ -7,6 +7,6 @@ namespace Inventory_database.ViewModels
     {
         public IEnumerable<StorageItem> Items { get; set; }
 
-        public int Page { get; set; }
+        public PagingViewModel Page { get; set; }
     }
 }
