@@ -59,7 +59,7 @@
     </header>
     <div class="container align-items-center text-center">
         <main role="main" class="pb-3">
-            <require-roles roles="new List<string> { userRole }">
+            <require-roles roles="new List<string> { userRole, adminRole }">
                 @RenderBody()
             </require-roles>
             <anonymous>

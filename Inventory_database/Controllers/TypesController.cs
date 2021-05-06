@@ -4,6 +4,7 @@ using Inventory_database.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,14 +23,20 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            var types = _repositoryType.GetAll();
-            var list = await types.OrderByDescending(t => t.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
-
             TypesViewModel typesView = new TypesViewModel
             {
-                Types = list,
+                Types = new List<ItemType>(),
                 Page = page
             };
+
+            var user = await Authorize();
+            if (user != null && user.Roles.Any(r => r.Name == "Пользователь"))
+            {
+                var types = _repositoryType.GetAll();
+                var list = await types.OrderByDescending(t => t.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
+
+                typesView.Types = list;
+            }
 
             return View(typesView);
         }

@@ -1,0 +1,20 @@
+﻿@model Inventory_database.ViewModels.EditUserViewModel
+
+@{
+    Layout = "_FormLayout";
+    ViewData["Title"] = "Изменение прав доступа";
+}
+
+<form asp-action="Edit" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="User" />
+    <div class="form-group">
+        <label asp-for="RolesId" class="control-label">Роли</label>
+        <select multiple="multiple" asp-for="RolesId" asp-items="Model.UserRoles">
+        </select>
+        <span asp-validation-for="UserRoles" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Применить" class="btn btn-primary" />
+    </div>
+</form>

@@ -3,18 +3,21 @@
 
 @{
     ViewData["Title"] = "Помещения";
+    string userRole = "Пользователь";
 }
 
-@if (Model.Rooms.Any())
-{
-    @foreach (var item in Model.Rooms)
+<require-roles roles="new List<string> { userRole }">
+    @if (Model.Rooms.Any())
     {
-        @await Html.PartialAsync("_ViewRoom", item)
+        @foreach (var item in Model.Rooms)
+        {
+            @await Html.PartialAsync("_ViewRoom", item)
+        }
     }
-}
-else
-{
-    <p class="text-muted text-center">Не найдено ни одного объекта в базе данных</p>
-}
+    else
+    {
+        <p class="text-muted text-center">Не найдено ни одного объекта в базе данных</p>
+    }
 
-<a class="btn btn-primary w-25" asp-action="Create">Создать</a>
+    <a class="btn btn-primary w-25" asp-action="Create">Создать</a>
+</require-roles>
