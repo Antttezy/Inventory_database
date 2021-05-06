@@ -24,14 +24,14 @@ namespace Inventory_database.Services
         public async Task<User> Get(int id)
         {
             IQueryable<User> users = Context.Users.Include(u => u.Roles);
-            var item = await users.AsNoTracking().FirstAsync(u => u.Id == id);
+            var item = await users.FirstAsync(u => u.Id == id);
             return item;
         }
 
         public IQueryable<User> GetAll()
         {
             IQueryable<User> users = Context.Users.Include(u => u.Roles);
-            return users.AsNoTracking();
+            return users;
         }
 
         public async Task Remove(User item)

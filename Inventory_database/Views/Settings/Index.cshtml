@@ -1,8 +1,51 @@
-﻿@using Inventory_database.Models
-@model User
+﻿@using Inventory_database.ViewModels
+@model SettingsViewModel
 
 @{
     Layout = "_SettingsLayout";
     ViewData["Title"] = "Наcтройки";
 }
 
+<form asp-controller="settings" asp-action="changeName" method="post" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="ChangeName.FirstName" class="control-label">Имя</label>
+        <input asp-for="ChangeName.FirstName" name="ChangeName.FirstName" class="form-control" />
+        <span asp-validation-for="ChangeName.FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ChangeName.SecondName" class="control-label">Фамилия</label>
+        <input asp-for="ChangeName.SecondName" name="ChangeName.SecondName" class="form-control" />
+        <span asp-validation-for="ChangeName.SecondName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ChangeName.ThirdName" class="control-label">Отчество</label>
+        <input asp-for="ChangeName.ThirdName" name="ChangeName.ThirdName" class="form-control" />
+        <span asp-validation-for="ChangeName.ThirdName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Применить" class="btn btn-primary" />
+    </div>
+</form>
+
+<form asp-controller="settings" asp-action="changePassword" method="post" asp-antiforgery="true">
+    <label class="control-label">Изменить пароль</label>
+    <div class="form-group">
+        <label asp-for="ChangePassword.OldPassword" class="control-label">Старый пароль</label>
+        <input asp-for="ChangePassword.OldPassword" name="ChangePassword.OldPassword" type="password" class="form-control" />
+        <span asp-validation-for="ChangePassword.OldPassword" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ChangePassword.NewPassword" class="control-label">Новый пароль</label>
+        <input asp-for="ChangePassword.NewPassword" name="ChangePassword.NewPassword" type="password" class="form-control" />
+        <span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ChangePassword.RepPassword" class="control-label">Повтор пароля</label>
+        <input asp-for="ChangePassword.RepPassword" name="ChangePassword.RepPassword" type="password" class="form-control" />
+        <span asp-validation-for="ChangePassword.RepPassword" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Применить" class="btn btn-primary" />
+    </div>
+</form>

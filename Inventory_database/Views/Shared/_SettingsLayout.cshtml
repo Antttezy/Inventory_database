@@ -15,10 +15,11 @@
 <body class="container-fluid flex-row">
     <header>
         <div class="sidenav">
-            <a href="#">About</a>
-            <a href="#">Services</a>
-            <a href="#">Clients</a>
-            <a href="#">Contact</a>
+            <a asp-controller="Items">На главную</a>
+            <a asp-controller="Settings">Настройки</a>
+            <require-roles roles="new List<string> { adminRole }">
+                <a href="#">Панель администратора</a>
+            </require-roles>
         </div>
     </header>
     <div class="main">
@@ -26,12 +27,6 @@
             <require-roles roles="new List<string> { userRole, adminRole}">
                 @RenderBody()
             </require-roles>
-            <anonymous>
-                <p class="text-muted text-center"><a asp-controller="Auth" asp-action="Login" class="btn-link">Войдите</a>, чтобы пользоваться приложением</p>
-                @{
-                    IgnoreBody();
-                }
-            </anonymous>
         </main>
         <footer class="footer text-muted row">
             <nav role="navigation" class="navbar fixed-bottom border-top">

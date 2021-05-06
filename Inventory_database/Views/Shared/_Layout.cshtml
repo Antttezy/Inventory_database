@@ -16,7 +16,7 @@
         <div class="navbar border-bottom mb-3">
             <ul class="nav">
                 <li>
-                    <require-roles roles="new List<string>{userRole, adminRole}">
+                    <require-roles roles="new List<string>{userRole}">
                         <ul class="nav">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Items">Инвентарь</a>
@@ -59,7 +59,7 @@
     </header>
     <div class="container align-items-center text-center">
         <main role="main" class="pb-3">
-            <require-roles roles="new List<string> { userRole, adminRole}">
+            <require-roles roles="new List<string> { userRole }">
                 @RenderBody()
             </require-roles>
             <anonymous>

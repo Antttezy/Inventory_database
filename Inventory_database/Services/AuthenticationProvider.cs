@@ -58,6 +58,20 @@ namespace Inventory_database.Services
             }
         }
 
+        public async Task<bool> IsLoginPasswordCorrect(string login, string password)
+        {
+            using var scope = Services.CreateScope();
+            var source = scope.ServiceProvider.GetRequiredService<IRepository<User>>();
+
+            string hash = Hasher.Hash(password);
+            var user = await source.GetAll()
+                .FirstOrDefaultAsync(u =>
+                u.Username == login &&
+                u.PasswordHash == Hasher.Hash(password));
+
+            return user != null;
+        }
+
         public async Task<string> LoginAsync(string login, string password, TimeSpan StoreTime)
         {
             using var scope = Services.CreateScope();
