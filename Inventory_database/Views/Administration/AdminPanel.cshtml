@@ -1,0 +1,19 @@
+﻿@model Inventory_database.ViewModels.AdministrationViewModel
+
+@{
+    Layout = "_SettingsLayout";
+    ViewData["Title"] = "Администрирование";
+}
+<p class="text-black p-0">Генерация ссылок для регистрации аккаунта</p>
+<form class="d-inline-block mb-5 mt-0" asp-controller="Auth" asp-action="GetRegistrationLink" method="post" asp-antiforgery="true">
+    <label>Количество ссылок</label>
+    <input type="number" name="count" value="0" />
+    <input type="submit" value="Получить" />
+</form>
+<p class="text-black p-0">Список пользователей</p>
+<div class="d-flex flex-row">
+    @foreach (var user in Model.Users)
+    {
+        @await Html.PartialAsync("_ViewUser", user)
+    }
+</div>

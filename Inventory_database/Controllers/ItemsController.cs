@@ -28,7 +28,7 @@ namespace Inventory_database.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             var items = _repositoryItem.GetAll();
-            var list = await items.Skip((page - 1) * 10).Take(10).OrderBy(i => i.Id).ToListAsync();
+            var list = await items.OrderByDescending(i => i.Id).Skip((page - 1) * 10).Take(10).ToListAsync();
 
             ItemsViewModel itemsView = new ItemsViewModel
             {
@@ -41,8 +41,12 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Create()
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             var vm = GetItemData(null);
             return View(vm);
@@ -52,8 +56,12 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StorageItem item)
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             if (ModelState.IsValid)
             {
@@ -70,8 +78,12 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Edit(int itemId)
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             var item = await _repositoryItem.Get(itemId);
 
@@ -91,8 +103,12 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StorageItem item)
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             try
             {
@@ -114,8 +130,12 @@ namespace Inventory_database.Controllers
 
         public async Task<IActionResult> Delete(int itemId)
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             var deleteVM = new DeleteViewModel
             {
@@ -130,8 +150,12 @@ namespace Inventory_database.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirm(int itemId)
         {
-            if (await Authorize() == null)
+            var user = await Authorize();
+            if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Пользователь"))
+                return Unauthorized();
 
             var item = await _repositoryItem.Get(itemId);
 

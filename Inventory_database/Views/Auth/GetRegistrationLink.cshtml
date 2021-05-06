@@ -1,0 +1,10 @@
+﻿@model IEnumerable<string>
+
+@{
+    Layout = "_SettingsLayout";
+}
+
+@foreach (var s in Model)
+{
+    <p><a href="@s" class="card-link">@s</a></p>
+}

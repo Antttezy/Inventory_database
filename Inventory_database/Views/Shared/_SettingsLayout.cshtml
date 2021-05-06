@@ -15,14 +15,14 @@
 <body class="container-fluid flex-row">
     <header>
         <div class="sidenav">
-            <a asp-controller="Items">На главную</a>
-            <a asp-controller="Settings">Настройки</a>
+            <a asp-controller="Items" asp-action="Index">На главную</a>
+            <a asp-controller="Settings" asp-action="Index">Настройки</a>
             <require-roles roles="new List<string> { adminRole }">
-                <a href="#">Панель администратора</a>
+                <a asp-controller="Administration" asp-action="AdminPanel">Панель администратора</a>
             </require-roles>
         </div>
     </header>
-    <div class="main">
+    <div class="main" style="overflow: hidden;">
         <main role="main" class="pb-3 row">
             <require-roles roles="new List<string> { userRole, adminRole}">
                 @RenderBody()
@@ -30,7 +30,7 @@
         </main>
         <footer class="footer text-muted row">
             <nav role="navigation" class="navbar fixed-bottom border-top">
-                <div class="justify-content-around container">
+                <div class="justify-content-around container" style="background-color: white">
                     Кумачев Антон - Система инвентарного учета
                 </div>
             </nav>

@@ -19,13 +19,13 @@
                     <require-roles roles="new List<string>{userRole}">
                         <ul class="nav">
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Items">Инвентарь</a>
+                                <a class="nav-link" asp-controller="Items" asp-action="Index">Инвентарь</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Rooms">Помещения</a>
+                                <a class="nav-link" asp-controller="Rooms" asp-action="Index">Помещения</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Types">Категории</a>
+                                <a class="nav-link" asp-controller="Types" asp-action="Index">Категории</a>
                             </li>
                             </ul>
                     </require-roles>

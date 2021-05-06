@@ -1,0 +1,10 @@
+﻿@model Inventory_database.Models.User
+
+<div class="card card-body ml-lg-3 mr-lg-3 mb-4">
+    <h4 class="card-header">@Model.Username</h4>
+    <p class="text-black-50 text-left">@Model.SecondName @Model.FirstName @Model.ThirdName</p>
+    <div class="navbar justify-content-end">
+        <a class="btn btn-link w-auto m-1" asp-action="Edit" asp-route-itemId="@Model.Id">Восстановить</a>
+        <a class="btn btn-danger w-auto m-1" asp-action="Delete" asp-route-itemId="@Model.Id">Удалить</a>
+    </div>
+</div>

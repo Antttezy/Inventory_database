@@ -98,7 +98,7 @@ namespace Inventory_database.Controllers
                 user = await UserRepository.Get(user.Id);
 
                 string token = HttpContext.Request.Cookies["auth_token"];
-                await AuthenticationProvider.LogoutAsync(token);
+                await AuthenticationProvider.LogoutFromAllSessionsAsync(token);
 
                 user.PasswordHash = HashingProvider.Hash(model.ChangePassword.NewPassword);
                 await UserRepository.Update(user);
@@ -112,6 +112,17 @@ namespace Inventory_database.Controllers
             {
                 return View("Index", model);
             }
+        }
+
+        [Route("User/Settings/Administration")]
+        public async Task<IActionResult> AdminPanel()
+        {
+            User user = await Authorize();
+
+            if (!user.Roles.Any(r => r.Name == "Администратор"))
+                return Unauthorized();
+
+            return View();
         }
 
         protected async Task<User> Authorize()

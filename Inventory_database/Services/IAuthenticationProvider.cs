@@ -15,5 +15,8 @@ namespace Inventory_database.Services
         Task<string> GenerateTokenAsync(string login, string password);
 
         Task LogoutAsync(string token);
+
+        Task LogoutFromAllSessionsAsync(string token);
+
     }
 }

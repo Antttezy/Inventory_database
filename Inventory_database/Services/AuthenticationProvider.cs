@@ -114,5 +114,21 @@ namespace Inventory_database.Services
 
             return Task.CompletedTask;
         }
+
+        public async Task LogoutFromAllSessionsAsync(string token)
+        {
+            if (token != null && Tokens.ContainsKey(token))
+            {
+                int id = Tokens[token];
+
+                foreach(var pair in Tokens)
+                {
+                    if (pair.Value == id)
+                    {
+                        await LogoutAsync(pair.Key);
+                    }
+                }
+            }
+        }
     }
 }
