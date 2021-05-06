@@ -14,13 +14,15 @@ namespace Inventory_database.Controllers
     {
         public IRepository<User> UserRepository { get; }
         public IRepository<Role> RoleRepository { get; }
+        public IHashingProvider HashingProvider { get; }
         public IAuthenticationProvider AuthenticationProvider { get; }
 
-        public AdministrationController(IRepository<User> userRepository, IAuthenticationProvider authenticationProvider, IRepository<Role> roleRepository)
+        public AdministrationController(IRepository<User> userRepository, IAuthenticationProvider authenticationProvider, IRepository<Role> roleRepository, IHashingProvider hashingProvider)
         {
             UserRepository = userRepository;
             AuthenticationProvider = authenticationProvider;
             RoleRepository = roleRepository;
+            HashingProvider = hashingProvider;
         }
 
 
@@ -84,19 +86,139 @@ namespace Inventory_database.Controllers
 
             if (ModelState.IsValid)
             {
-                User edit = await UserRepository.Get(model.User);
+                try
+                {
+                    User edit = await UserRepository.Get(model.User);
 
-                edit.Roles = await RoleRepository.GetAll()
-                    .Where(r => model.RolesId
-                    .Any(i => r.Id == i))
-                    .ToListAsync();
+                    edit.Roles = await RoleRepository.GetAll()
+                        .Where(r => model.RolesId
+                        .Any(i => r.Id == i))
+                        .ToListAsync();
 
-                await UserRepository.Update(edit);
-                return RedirectToAction("Index", "Settings");
+                    await UserRepository.Update(edit);
+                    return RedirectToAction("Index", "Settings");
+                }
+                catch (Exception)
+                {
+                    return BadRequest();
+                }
             }
             else
             {
                 return View(model);
+            }
+        }
+
+
+        [Route("Administration/Restore")]
+        public async Task<IActionResult> Restore(int userId)
+        {
+            var user = await Authorize();
+            if (user == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Администратор"))
+                return Unauthorized();
+
+            if (UserRepository.GetAll().Any(u => u.Id == userId))
+            {
+                return View(new RestoreUserViewModel
+                {
+                    Id = userId
+                });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
+        [Route("Administration/Restore")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(RestoreUserViewModel model)
+        {
+            var user = await Authorize();
+            if (user == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Администратор"))
+                return Unauthorized();
+
+            if (ModelState.IsValid)
+            {
+                var restoreUser = await UserRepository.Get(model.Id);
+
+                if (restoreUser != null)
+                {
+                    restoreUser.PasswordHash = HashingProvider.Hash(model.Password);
+                    await UserRepository.Update(restoreUser);
+                    var token = await AuthenticationProvider.GenerateTokenAsync(restoreUser.Username, model.Password);
+                    await AuthenticationProvider.LogoutFromAllSessionsAsync(token);
+
+                    return RedirectToAction(nameof(AdminPanel));
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+
+        [Route("Administration/Delete")]
+        public async Task<IActionResult> Delete(int userId)
+        {
+            var user = await Authorize();
+            if (user == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Администратор"))
+                return Unauthorized();
+
+            if (UserRepository.Get(userId) != null)
+            {
+                var deleteVM = new DeleteViewModel
+                {
+                    ConfirmUrl = Url.Action(nameof(DeleteConfirm), new { userId }),
+                    FallbackUrl = Url.Action(nameof(AdminPanel))
+                };
+
+                return View("_ConfirmDelete", deleteVM);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("Administration/Delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirm(int userId)
+        {
+            var user = await Authorize();
+            if (user == null)
+                return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
+
+            if (!user.Roles.Any(r => r.Name == "Администратор"))
+                return Unauthorized();
+
+            var delUser = await UserRepository.Get(userId);
+
+            if (delUser != null)
+            {
+                await UserRepository.Remove(delUser);
+                return RedirectToAction(nameof(AdminPanel));
+            }
+            else
+            {
+                return NotFound();
             }
         }
 

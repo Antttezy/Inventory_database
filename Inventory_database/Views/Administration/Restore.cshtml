@@ -1,0 +1,19 @@
+﻿@model Inventory_database.ViewModels.RestoreUserViewModel
+
+@{
+    Layout = "_FormLayout";
+    ViewData["Title"] = "Сброс пароля пользователя";
+}
+
+<form asp-action="Restore" asp-controller="Administration" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Password">Новый пароль</label>
+        <input type="password" asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Сброс" class="btn btn-danger" />
+    </div>
+</form>

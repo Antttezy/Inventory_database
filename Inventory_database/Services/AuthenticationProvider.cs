@@ -33,7 +33,7 @@ namespace Inventory_database.Services
 
         public async Task<string> GenerateTokenAsync(string login, string password)
         {
-            return await LoginAsync(login, password, TimeSpan.MaxValue);
+            return await LoginAsync(login, password, TimeSpan.FromDays(30));
         }
 
         public async Task<User> GetUserByTokenAsync(string token)
