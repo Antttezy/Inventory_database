@@ -121,7 +121,7 @@ namespace Inventory_database.Services
             {
                 int id = Tokens[token];
 
-                foreach(var pair in Tokens)
+                foreach (var pair in Tokens)
                 {
                     if (pair.Value == id)
                     {

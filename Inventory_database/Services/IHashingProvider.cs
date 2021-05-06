@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Inventory_database.Services
+﻿namespace Inventory_database.Services
 {
     public interface IHashingProvider
     {
