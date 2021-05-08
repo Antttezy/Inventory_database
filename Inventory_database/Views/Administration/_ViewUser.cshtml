@@ -3,6 +3,7 @@
 <div class="card card-body ml-lg-3 mr-lg-3 mb-4">
     <h4 class="card-header">@Model.Username</h4>
     <p class="text-black-50 text-left">@Model.SecondName @Model.FirstName @Model.ThirdName</p>
+    <p class="text-black-50 text-left">Роли: @string.Join(", ", Model.Roles.Select(r => r.Name))</p>
     <div class="navbar justify-content-end">
         <a class="btn btn-link w-auto m-1" asp-action="Edit" asp-route-userId="@Model.Id">Изменить</a>
         <a class="btn btn-link w-auto m-1" asp-action="Restore" asp-route-userId="@Model.Id">Восстановить</a>
