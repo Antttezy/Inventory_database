@@ -8,6 +8,13 @@ namespace Inventory_database.Util
     public static class DBInitializer
     {
 
+        /// <summary>
+        /// Инициализирует базу данных
+        /// </summary>
+        /// <param name="users">репозиторий пользователей</param>
+        /// <param name="roles">репозиторий ролей</param>
+        /// <param name="provider">сервис вычислений хэша</param>
+        /// <param name="logger">логгер</param>
         public static void Seed(IRepository<User> users, IRepository<Role> roles, IHashingProvider provider, ILogger logger)
         {
             logger.LogInformation("Database seeder started");

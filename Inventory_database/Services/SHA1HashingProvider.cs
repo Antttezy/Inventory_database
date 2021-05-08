@@ -15,7 +15,7 @@ namespace Inventory_database.Services
         {
             using (var hasher = System.Security.Cryptography.SHA1.Create())
             {
-                return string.Join("", hasher.ComputeHash(Converter.Convert(message)).Select(b => b.ToString("X2")));
+                return string.Join("", hasher.ComputeHash(Converter.Convert(message)).Select(b => b.ToString("X2"))); //Находим хэш для строки и переводим каждый байт в строку
             }
         }
     }

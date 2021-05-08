@@ -13,7 +13,7 @@ namespace Inventory_database.Controllers
 {
     public class AuthController : Controller
     {
-        static HashSet<string> AuthCodes { get; } = new HashSet<string>();
+        static HashSet<string> AuthCodes { get; } = new HashSet<string>(); //Одноразовые коды для регистрации
 
         public IAuthenticationProvider AuthenticationProvider { get; }
         public IRepository<User> UserRepository { get; }
@@ -45,9 +45,9 @@ namespace Inventory_database.Controllers
         {
             if (ModelState.IsValid)
             {
-                string token = await AuthenticationProvider.LoginAsync(model.Login, model.Password, TimeSpan.FromMinutes(30));
+                string token = await AuthenticationProvider.LoginAsync(model.Login, model.Password, TimeSpan.FromMinutes(30)); //Осуществляем вход в систему
 
-                if (token == null)
+                if (token == null) //Если не был получен токен доступа
                 {
                     ModelState.AddModelError("", "Неверный логин или пароль");
                     return View(model);
@@ -55,10 +55,10 @@ namespace Inventory_database.Controllers
                 else
                 {
                     HttpContext.Response.Cookies.Append("auth_token", token);
-                    if (!Url.IsLocalUrl(model.Fallback))
+                    if (!Url.IsLocalUrl(model.Fallback)) //Проверка на локальность адреса переадресации
                         model.Fallback = "Home/Items";
 
-                    return Redirect(model.Fallback);
+                    return LocalRedirect(model.Fallback);
                 }
             }
             else
@@ -74,15 +74,17 @@ namespace Inventory_database.Controllers
         {
             var user = await Authorize();
 
-            if (!user.Roles.Any(r => r.Name == "Администратор"))
+            if (!user.Roles.Any(r => r.Name == "Администратор")) //Для генерации нужны права администратора
                 return Unauthorized();
 
             List<string> links = new List<string>();
 
-            if (count <= 0 || count > 100)
-                return View(links);
+            if (count < 0) //Ограничение значкений между 0 и 100
+                count = 0;
+            else if (count > 100)
+                count = 100;
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++) //Генерируем указанное количество guid и ссылки на регистрацию с нужным параметром
             {
                 string guid = Guid.NewGuid().ToString();
                 string code = HttpUtility.UrlEncode(guid);
@@ -90,7 +92,7 @@ namespace Inventory_database.Controllers
 
                 lock (AuthCodes)
                 {
-                    AuthCodes.Add(code);
+                    AuthCodes.Add(code); //Добавляем код
                 }
 
                 links.Add(link);
@@ -124,22 +126,22 @@ namespace Inventory_database.Controllers
                 return View(model);
             }
 
-            if (!ModelState.IsValid)
-                return View(model);
 
             if (UserRepository.GetAll().Any(u => u.Username.ToLower() == model.Login.ToLower()))
             {
                 ModelState.AddModelError("", "Имя пользователя занято");
-                return View(model);
             }
 
             if (model.Password != model.ConfirmPassword)
             {
                 ModelState.AddModelError("", "Пароли не совпадают");
-                return View(model);
             }
 
-            User user = new User
+            if (!ModelState.IsValid)
+                return View(model);
+
+
+            User user = new User //Создание пользователя
             {
                 Username = model.Login,
                 FirstName = "Имя",
@@ -151,13 +153,13 @@ namespace Inventory_database.Controllers
             var role = await RoleRepository.GetAll().FirstAsync(r => r.Name == "Пользователь");
             user.Roles.Add(role);
 
-            lock (AuthCodes)
+            lock (AuthCodes) //После создания пользователя удаляем одноразовый код
             {
                 AuthCodes.Remove(model.Code);
             }
 
             await UserRepository.Add(user);
-            string token = await AuthenticationProvider.LoginAsync(model.Login, model.Password, TimeSpan.FromMinutes(30));
+            string token = await AuthenticationProvider.LoginAsync(model.Login, model.Password, TimeSpan.FromMinutes(30));      //Добавляем пользователя в хранилище и генерируем ему токен доступа
             HttpContext.Response.Cookies.Append("auth_token", token);
 
             return RedirectToAction("Index", "Items");
@@ -175,7 +177,7 @@ namespace Inventory_database.Controllers
             return RedirectToAction(nameof(ItemsController.Index), "Items");
         }
 
-        protected async Task<User> Authorize()
+        protected async Task<User> Authorize() //Получение пользователя по токену доступа
         {
             string token = HttpContext.Request.Cookies["auth_token"];
             User user = await AuthenticationProvider.GetUserByTokenAsync(token);

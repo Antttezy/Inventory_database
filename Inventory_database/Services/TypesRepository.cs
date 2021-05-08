@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
+
+    /// <summary>
+    /// Репозиторий категорий предметов инвентаря
+    /// </summary>
     public class TypesRepository : IRepository<ItemType>
     {
         InventoryContext Context { get; }

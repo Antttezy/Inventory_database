@@ -30,18 +30,18 @@ namespace Inventory_database.Controllers
         public async Task<IActionResult> AdminPanel(int page = 1)
         {
             var user = await Authorize();
-            if (user == null)
+            if (user == null)                                                                               //Если пользователь не вошел, перенаправляем на страницу авторизации
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
 
-            if (!user.Roles.Any(r => r.Name == "Администратор"))
+            if (!user.Roles.Any(r => r.Name == "Администратор"))                                            //Если не соответствует роли, выдаем сообщение
                 return Unauthorized();
 
-            List<User> users = await UserRepository.GetAll().OrderByDescending(u => u.Id).Skip((page - 1) * 10).Take(5).ToListAsync();
+            List<User> users = await UserRepository.GetAll().OrderByDescending(u => u.Id).Skip((page - 1) * 5).Take(5).ToListAsync(); //Список пользователей по страницам
 
             var vm = new AdministrationViewModel
             {
                 Users = users,
-                Page = new PagingViewModel(page, await UserRepository.GetAll().CountAsync(), 5)
+                Page = new PagingViewModel(page, await UserRepository.GetAll().CountAsync(), 5) //Задание модели постраничного просмотра
             };
 
             return View(vm);
@@ -90,12 +90,12 @@ namespace Inventory_database.Controllers
                 {
                     User edit = await UserRepository.Get(model.User);
 
-                    edit.Roles = await RoleRepository.GetAll()
+                    edit.Roles = await RoleRepository.GetAll() //Получение ролей по переданному списку
                         .Where(r => model.RolesId
                         .Any(i => r.Id == i))
                         .ToListAsync();
 
-                    await UserRepository.Update(edit);
+                    await UserRepository.Update(edit); //Обновление ролей пользователя
                     return RedirectToAction("Index", "Settings");
                 }
                 catch (Exception)
@@ -111,7 +111,7 @@ namespace Inventory_database.Controllers
 
 
         [Route("Administration/Restore")]
-        public async Task<IActionResult> Restore(int userId)
+        public async Task<IActionResult> Restore(int userId) //Восстановление пароля администратором
         {
             var user = await Authorize();
             if (user == null)
@@ -143,18 +143,18 @@ namespace Inventory_database.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Auth", new { fallbackUrl = HttpContext.Request.Path });
 
-            if (!user.Roles.Any(r => r.Name == "Администратор"))
+            if (!user.Roles.Any(r => r.Name == "Администратор"))        //Для этого действия нужны права администратора
                 return Unauthorized();
 
             if (ModelState.IsValid)
             {
-                var restoreUser = await UserRepository.Get(model.Id);
+                var restoreUser = await UserRepository.Get(model.Id);   //Получение пользователя, для которого надо восстановить пароль
 
                 if (restoreUser != null)
                 {
-                    restoreUser.PasswordHash = HashingProvider.Hash(model.Password);
-                    await UserRepository.Update(restoreUser);
-                    var token = await AuthenticationProvider.GenerateTokenAsync(restoreUser.Username, model.Password);
+                    restoreUser.PasswordHash = HashingProvider.Hash(model.Password);                                    //Создание нового пароля
+                    await UserRepository.Update(restoreUser);                                                           //Обновление пользователя в репозитории
+                    var token = await AuthenticationProvider.GenerateTokenAsync(restoreUser.Username, model.Password);  //После смены пароля выбрасываем пользователя из всех сессий
                     await AuthenticationProvider.LogoutFromAllSessionsAsync(token);
 
                     return RedirectToAction(nameof(AdminPanel));
@@ -189,7 +189,7 @@ namespace Inventory_database.Controllers
                     FallbackUrl = Url.Action(nameof(AdminPanel))
                 };
 
-                return View("_ConfirmDelete", deleteVM);
+                return View("_ConfirmDelete", deleteVM); //Страница подтверждения удаления
             }
             else
             {
@@ -213,7 +213,7 @@ namespace Inventory_database.Controllers
 
             if (delUser != null)
             {
-                await UserRepository.Remove(delUser);
+                await UserRepository.Remove(delUser);       //Удаляем нужного пользователя
                 return RedirectToAction(nameof(AdminPanel));
             }
             else
@@ -222,9 +222,9 @@ namespace Inventory_database.Controllers
             }
         }
 
-        protected async Task<EditUserViewModel> GetEditUserViewModelAsync(User user)
+        protected async Task<EditUserViewModel> GetEditUserViewModelAsync(User user) //Получает модель редактирования пользователя
         {
-            return new EditUserViewModel
+            return new EditUserViewModel //id и множественный список ролей
             {
                 User = user.Id,
                 UserRoles = new Microsoft.AspNetCore.Mvc.Rendering.MultiSelectList(await RoleRepository.GetAll().ToListAsync(), nameof(Role.Id), nameof(Role.Name), user.Roles)

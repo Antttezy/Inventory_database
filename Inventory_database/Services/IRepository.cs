@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
+    /// <summary>
+    /// Репозиторий для хранения данных
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IRepository<T>
     {
         IQueryable<T> GetAll();

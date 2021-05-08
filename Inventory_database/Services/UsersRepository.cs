@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
+
+    /// <summary>
+    /// Репозиторий пользователей
+    /// </summary>
     public class UsersRepository : IRepository<User>
     {
         AuthenticationContext Context { get; }

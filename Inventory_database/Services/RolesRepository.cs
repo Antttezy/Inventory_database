@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Inventory_database.Services
 {
+
+    /// <summary>
+    /// Репозиторий ролей пользователей
+    /// </summary>
     public class RolesRepository : IRepository<Role>
     {
         AuthenticationContext Context { get; }
